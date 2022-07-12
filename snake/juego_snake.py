@@ -32,6 +32,20 @@ food.goto(0,100)
 #Segmentos o cuerpo de la serpiente
 segment = []
 
+
+#texto
+text = turtle.Turtle()
+text.speed(0)
+text.color("white")
+text.penup()
+text.hideturtle()
+text.goto(0,260)
+text.write("Score: 0        High Score: 0", align= "center",font= ("Courier",24,"normal"))
+
+score = 0
+high_score = 0
+
+
 def arriba():
     head.direction = "up"
 def abajo():
@@ -59,7 +73,7 @@ def mov():
         x = head.xcor()
         head.setx(x + 20)
 
-#Teclado
+#keyboard
 wn.listen()
 wn.onkeypress(arriba,"Up")
 wn.onkeypress(abajo,"Down")
@@ -69,12 +83,32 @@ wn.onkeypress(right,"Right")
 while True:
     wn.update()
 
+    #collision with borders
+    if head.xcor() > 280 or head.xcor() < -280 or head.ycor() > 280 or head.ycor() < -280:
+        time.sleep(1)
+        head.goto(0,0)
+        head.direction = "stop"
+
+        #esconder los segmentos
+        [i.hideturtle() for i in segment]
+        segment.clear()
+
+        #Limpiar lista de segmentos
+        segment.clear
+
+        #Resetear marcador
+        score = 0
+        text.clear()
+        text.write("Score: {}    High Score: {}".format(score,high_score), align= "center",font= ("Courier",24,"normal"))
+
+
+    #collision with food
     if head.distance(food) < 20:
         x = random.randint(-280,280)
         y = random.randint(-280,280)
         food.goto(x,y)
 
-        #Curpo de la serpiente
+        #Snake body
         new_segment = turtle.Turtle()
         new_segment.speed(0)
         new_segment.shape("square")
@@ -82,7 +116,15 @@ while True:
         new_segment.penup()
         segment.append(new_segment)
 
-    #mover el cuerpo de la serpiente
+        #aumenta marcador
+        score += 10
+        if score > high_score:
+            high_score = score
+        
+        text.clear()
+        text.write("Score: {}    High Score: {}".format(score,high_score), align= "center",font= ("Courier",24,"normal"))
+
+    #movin snake body
     total_seg = len(segment)
     for index in range(total_seg -1,0,-1):
         x = segment[index -1].xcor()
